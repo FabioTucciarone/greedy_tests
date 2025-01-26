@@ -1,0 +1,241 @@
+{
+  "general": {
+    "function": "franke3d",
+    "ranks": {
+      "A": [ 1 ],
+      "B": [ 1 ]
+    },
+    "synchronize": true,
+    "meshes": {
+      "A": {
+        "0.03": "${ROOT_LOCATION}/meshes/t_0.03.vtk",
+        "0.02": "${ROOT_LOCATION}/meshes/t_0.02.vtk",
+        "0.01": "${ROOT_LOCATION}/meshes/t_0.01.vtk",
+        "0.009": "${ROOT_LOCATION}/meshes/t_0.009.vtk",
+        "0.008": "${ROOT_LOCATION}/meshes/t_0.008.vtk",
+        "0.006": "${ROOT_LOCATION}/meshes/t_0.006.vtk",
+        "0.004": "${ROOT_LOCATION}/meshes/t_0.004.vtk"
+      },
+      "B": {
+        "0.003": "${ROOT_LOCATION}/meshes/t_0.003.vtk"
+      }
+    }
+  },
+  "groups": [
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "rbf-direct": {
+            "kind": "rbf-global-direct",
+            "options": "polynomial=\"off\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.03",
+          "0.02",
+          "0.01",
+          "0.009",
+          "0.008",
+          "0.006"
+        ],
+        "B": [
+          "0.003"
+        ]
+      }
+    },
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "nearest-neighbour": {
+            "kind": "nearest-neighbor"
+          },
+          "pum_M10": {
+            "kind": "rbf-pum-direct",
+            "options": "relative-overlap=\"0.22\" vertices-per-cluster=\"10\" project-to-input=\"false\" polynomial=\"off\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "pum_M5": {
+            "kind": "rbf-pum-direct",
+            "options": "relative-overlap=\"0.22\" vertices-per-cluster=\"5\" project-to-input=\"false\" polynomial=\"off\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "pum_M200": {
+            "kind": "rbf-pum-direct",
+            "options": "relative-overlap=\"0.22\" vertices-per-cluster=\"200\" project-to-input=\"false\" polynomial=\"off\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "pum_M500": {
+            "kind": "rbf-pum-direct",
+            "options": "relative-overlap=\"0.22\" vertices-per-cluster=\"500\" project-to-input=\"false\" polynomial=\"off\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "pum_M100": {
+            "kind": "rbf-pum-direct",
+            "options": "relative-overlap=\"0.22\" vertices-per-cluster=\"100\" project-to-input=\"false\" polynomial=\"off\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.03",
+          "0.02",
+          "0.01",
+          "0.009",
+          "0.008",
+          "0.006",
+          "0.004"
+        ],
+        "B": [
+          "0.003"
+        ]
+      }
+    },
+    {
+      "mapping": {
+        "constraints": [
+          "consistent"
+        ],
+        "cases": {
+          "p-greedy_1e-4": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"1e-4\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "p-greedy_1e-4.5": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"3.162278e-5\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "p-greedy_1e-5": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"1e-5\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "p-greedy_1e-5.5": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"3.162278e-6\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "p-greedy_1e-6": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"1e-6\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "p-greedy_1e-6.5": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"3.162278e-7\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "p-greedy_1e-7": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"1e-7\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "p-greedy_1e-7.5": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"3.162278e-8\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "p-greedy_1e-8": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"1e-8\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "f-greedy_1e-4": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-4\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "f-greedy_1e-5": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-5\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "f-greedy_1e-6": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-6\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "f-greedy_1e-7": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-7\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "f-greedy_1e-8": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-8\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "f-greedy_1e-9": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-9\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "f-greedy_1e-10": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-10\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "f-greedy_1e-11": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-11\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "f-greedy_1e-12": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-12\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          }
+        }
+      },
+      "meshes": {
+        "A": [
+          "0.03",
+          "0.02",
+          "0.01",
+          "0.009",
+          "0.008",
+          "0.006",
+          "0.004"
+        ],
+        "B": [
+          "0.003"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "general": {
+    "function": "franke3d",
+    "ranks": {
+      "A": [ 1 ],
+      "B": [ 1 ]
+    },
+    "synchronize": true,
+    "meshes": {
+      "A": { "0.006": "${ROOT_LOCATION}/meshes/t_0.006.vtk" },
+      "B": { "0.008": "${ROOT_LOCATION}/meshes/t_0.008.vtk" }
+    }
+  },
+  "groups": [
+    {
+      "mapping": {
+        "constraints": [ "consistent" ],
+        "cases": {
+          "P-cholesky-15":  { "kind": "rbf-greedy", "options": "greedy-type=\"P-cholesky\" max-iterations=\"1438\"  polynomial=\"off\" solver-rtol=\"0\"", "basis-function": "compact-polynomial-c2", "basis-function-options": "support-radius=\"10\"" },
+          "P-cut-15": { "kind": "rbf-greedy", "options": "greedy-type=\"P-cut\" max-iterations=\"1438\" polynomial=\"off\" solver-rtol=\"0\"", "basis-function": "compact-polynomial-c2", "basis-function-options": "support-radius=\"10\"" }
+        }
+      },
+      "meshes": {
+        "A": [ "0.006" ],
+        "B": [ "0.008" ]
+      }
+    }
+  ]
+}

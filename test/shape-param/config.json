@@ -1,0 +1,92 @@
+{
+  "general": {
+    "function": "franke2d(xy)",
+    "ranks": {
+      "A": [ 1 ],
+      "B": [ 1 ]
+    },
+    "synchronize": false,
+    "meshes": {
+      "A": { "coarse": "${ROOT_LOCATION}/meshes/t_0.006.vtk" },
+      "B": { "fine": "${ROOT_LOCATION}/meshes/t_0.003.vtk" }
+    }
+  },
+  "groups": [
+    {
+      "mapping": {
+        "constraints": ["consistent"],
+        "cases": {
+          "gauss-80": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"80\""
+          },
+          "gauss-90": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"90\""
+          },
+          "gauss-100": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"100\""
+          },
+          "gauss-110": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"110\""
+          },
+          "gauss-120": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"120\""
+          },
+          "gauss-130": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"130\""
+          },
+          "gauss-140": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"140\""
+          },
+          "gauss-150": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"150\""
+          },
+          "gauss-160": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"160\""
+          },
+          "gauss-170": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"170\""
+          },
+          "gauss-180": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"180\""
+          },
+          "gauss-190": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"190\""
+          },
+          "gauss-200": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"200\""
+          },
+          "gauss-210": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"210\""
+          },
+          "gauss-220": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"220\""
+          },
+          "gauss-230": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"230\""
+          },
+          "gauss-240": {
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "gaussian shape-parameter=\"240\""
+          }
+        }
+      },
+      "meshes": { "A": ["coarse"], "B": ["fine"] }
+    }
+  ]
+}
