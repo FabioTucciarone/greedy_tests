@@ -1,11 +1,11 @@
-time-steps: 21
+time-steps: 31
 time-step-size: 0.01
-coarse-mesh: "t_0.01" 
-fine-mesh: "t_0.003"
-greedy-type: "f-cholesky-tolerance-rebuild"
+coarse-mesh: "t_0.008" 
+fine-mesh: "t_0.006"
+greedy-type: "f-cholesky-rebuild"
 basis-function: "compact-polynomial-c2"
 support-radius: 10
-solver-rtol: 8e-8 # 0.01: 8e-8, 0.008: 3.5e-8, 0.006: 4e-9
+solver-rtol: 3.5e-8 # 0.01: 8e-8, 0.008: 3.5e-8, 0.006: 4e-9
 constraint: "consistent"
 polynomial: "off"
 test-function: "moving-cos"

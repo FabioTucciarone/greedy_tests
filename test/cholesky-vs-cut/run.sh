@@ -2,7 +2,7 @@ TEST_NAME="cholesky-vs-cut"
 
 export ROOT_LOCATION="$(pwd)"
 
-ASTE_PATH="${ROOT_LOCATION}/../aste"  # CHANGE DEPENDING ON ASTE INSTALLATION
+ASTE_PATH="${ROOT_LOCATION}/../aste" # CHANGE DEPENDING ON ASTE INSTALLATION
 
 RUN_LOCATION="${ROOT_LOCATION}/test/${TEST_NAME}"
 TEST_LOCATION="${ROOT_LOCATION}/test/${TEST_NAME}/testcase"
@@ -42,6 +42,6 @@ echo ""
 echo "[TEST] gatherstats.py"
 echo ""
 
-python3 "${MAPPING_TESTER}/gatherstats.py" --outdir "${RUN_LOCATION}" --file statistics.csv
+python3 "${MAPPING_TESTER}/gatherstats.py" --outdir "${RUN_LOCATION}/data" --file statistics.csv
 
 cd $RUN_LOCATION

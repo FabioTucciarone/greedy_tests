@@ -2,38 +2,48 @@ import polars as pl
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
 import matplotlib as mp
 import sys
 import json
 import yaml
 import os
+from cycler import cycler
+
+
+preCICE_orange = "#F36221"
+preCICE_lightblue = "#9ECEEC"
+preCICE_blue = "#0065BD"
+preCICE_green = "#A1B119"
+preCICE_red = "#B02029"
+preCICE_yellow = "#D1A13B"
+
 
 def parse_greedy_data_json(df_row):
     data = json.loads(df_row["data"].replace("\'", "\""))
     return { "N": data["inSize"], "n": data["basisSize"] }
     
     
-def set_properties(label):
-    plt.grid(True, which="major", color="gainsboro", linestyle="-", linewidth=0.5)
-    plt.ylabel(label)
-    plt.tick_params('x', labelbottom=False)
-    if label == "µs":
-        plt.grid(True, which="both", color="gainsboro", linestyle="-", linewidth=0.5)
-        plt.yscale("log")
+def set_properties(ax: Axes, label):
+    ax.grid(True, which="major", color="gainsboro", linestyle="-", linewidth=0.5)
+    ax.set_ylabel(label)
+    ax.tick_params('x', labelbottom=False)
+    if label == "time ($\mu s$)":
+        ax.grid(True, which="both", color="gainsboro", linestyle="-", linewidth=0.5)
+        ax.set_yscale("log")
     if label == "centers":
-        plt.gca().yaxis.set_major_formatter(mp.ticker.PercentFormatter())
-        
+        ax.yaxis.set_major_formatter(mp.ticker.PercentFormatter(decimals=0))
+    #ax.set_yticks(ax.get_yticks())
 
 
-def combine_input_files(events_csv, statistics_csv, plot_info, print_details=False):
-        
+def combine_input_files(events_csv, statistics_csv, print_details=False):
     if print_details:
         pd.set_option('display.max_rows', None)
-        row_selector = (events_csv["participant"] == "B") & events_csv["event"].str.contains("map.f-greedy.(solve|update)", regex=True)
+        row_selector = (events_csv["participant"] == "B") & events_csv["event"].str.contains("map..*greedy.(solve|update)", regex=True)
         events = events_csv[row_selector]
         print(events[["event", "duration"]])
     
-    row_selector = (events_csv["participant"] == "B") & events_csv["event"].str.contains("map.f-greedy.mapData")
+    row_selector = (events_csv["participant"] == "B") & events_csv["event"].str.contains("map..*greedy.mapData")
     events = events_csv[row_selector]
     
     applied_df = events.apply(parse_greedy_data_json, axis='columns', result_type='expand')
@@ -41,7 +51,7 @@ def combine_input_files(events_csv, statistics_csv, plot_info, print_details=Fal
     statistics = statistics.reset_index()
     statistics["relative-l2"] = list(statistics_csv["relative-l2"])
     statistics = statistics.drop([len(statistics)-1], axis=0) # letzter Zeitschritt aus irgendeinem Grund verschoben
-    statistics["t"] = (statistics.index.astype(int) + 1) * plot_info['time-step-size']
+    statistics["t"] = (statistics.index.astype(int) + 1) # * plot_info['time-step-size']
     
     if print_details:
         print(statistics[["t", "n", "N", "duration", "relative-l2"]])
@@ -49,24 +59,20 @@ def combine_input_files(events_csv, statistics_csv, plot_info, print_details=Fal
     return statistics
 
 
+def show_statistics(axs: list[Axes], statistics, label, linestyle, marker):
+    axs[0].plot(statistics["t"], statistics["duration"], marker=marker, linestyle=linestyle, markersize=4, label=label)
+    set_properties(axs[0], "time ($\mu s$)")
 
-def show_statistics(statistics, label, linestyle, marker):
-    ax1 = plt.subplot(3, 1, 1)
-    plt.plot(statistics["t"], statistics["duration"], marker=marker, markersize=4, linestyle=linestyle, label=label)
-    set_properties("µs")
-
-    plt.subplot(3, 1, 2, sharex=ax1)
-    plt.plot(statistics["t"], (statistics["n"] / statistics["N"]) * 100, marker=marker, markersize=4, linestyle=linestyle, label=label)
-    set_properties("centers")
+    axs[1].plot(statistics["t"], (statistics["n"] / statistics["N"]) * 100, marker=marker,linestyle=linestyle, markersize=4, label=label)
+    set_properties(axs[1], "centers")
                 
-    plt.subplot(3, 1, 3, sharex=ax1)
-    plt.plot(statistics["t"], statistics["relative-l2"], marker=marker, linestyle=linestyle, markersize=4, label=label)
-    set_properties("RMSE Error")
+    axs[2].plot(statistics["t"], statistics["relative-l2"], marker=marker, linestyle=linestyle, markersize=4, label=label)
+    set_properties(axs[2], "error (RMSE)")
                 
-    ax1.set_xticks(statistics["t"])
-    plt.tick_params('x', labelbottom=True)
+    axs[2].set_xticks(statistics["t"])
+    axs[2].tick_params('x', labelbottom=True)
                 
-    plt.xlabel("t")
+    axs[2].set_xlabel("time steps")
     
     average_duration = np.average(statistics["duration"])
     average_error = np.average(statistics["relative-l2"])
@@ -74,7 +80,7 @@ def show_statistics(statistics, label, linestyle, marker):
     print(f"   average error    = {average_error}")
 
 
-def load_statistics(case_path, plot_info):
+def load_statistics(case_path):
     events_path     = os.path.join(case_path, "profiling.csv")
     statistics_path = os.path.join(case_path, "statistics.csv")
         
@@ -85,7 +91,7 @@ def load_statistics(case_path, plot_info):
     events_csv     = pd.read_csv(events_path)
     statistics_csv = pd.read_csv(statistics_path)
                 
-    return combine_input_files(events_csv, statistics_csv, plot_info, print_details=False)
+    return combine_input_files(events_csv, statistics_csv, print_details=False)
 
 
 def load_yaml_info(info_yaml_path):
@@ -100,24 +106,16 @@ def load_yaml_info(info_yaml_path):
             return None
 
 
-def main(argv):
-    run_path = "./test/adaptive-f-greedy"
-    if len(argv) == 2:
-        run_path = argv[1]
-        
-    
-    plot_name = "cholesky-compare-all"
-    
+def main(run_path, plot_name, colors, linestyles, markers):
     
     plot_path = os.path.join(run_path, "data", plot_name)
-    plot_info = load_yaml_info(os.path.join(plot_path, "plot-info.yaml"))
-    
-    linestyles = ["solid", "dashed", "dotted", "dashdot"]
-    markers = ["o", "v", "d", "h", "s", "P"]
+ 
+    if len(os.listdir(plot_path)) > 0:
         
-    if plot_info is not None:
+        fig, axs = plt.subplots(nrows=3, ncols=1, sharex=True)
         
-        plt.suptitle(f"{plot_name}: Mesh={plot_info['mesh']}, f={plot_info['test-function']}, φ={plot_info['basis-function']} (ρ = {plot_info['support-radius']}), {plot_info['additional-info']}")
+        for j in range(0, 3):
+            axs[j].set_prop_cycle(cycler(color=colors))
         
         i = 0
         plot_path = os.path.join(run_path, "data", plot_name)
@@ -138,35 +136,56 @@ def main(argv):
                     if os.path.isdir(sub_case_path) and not sub_case_dir.startswith("."):
                         print(f" > sub-case: \"{sub_case_dir}\"")
                         
-                        statistics = load_statistics(sub_case_path, plot_info)
+                        statistics = load_statistics(sub_case_path)
                         if statistics is None:
                             continue
                         
-                        show_statistics(statistics, f"{case_dir}: {sub_case_dir}", linestyles[i % len(linestyles)], markers[i % len(markers)])
+                        show_statistics(axs, statistics, f"{case_dir}: {sub_case_dir}", linestyles[i % len(linestyles)], markers[i % len(markers)])
                 i += 1
             
-                for j in range(1, 4):
-                    ax = plt.subplot(3, 1, j)
-                    ax.set_prop_cycle(None)
+                for j in range(0, 3):
+                    axs[j].set_prop_cycle(cycler(color=colors))
 
-        handles, labels = plt.gca().get_legend_handles_labels()
-        plt.gcf().legend(handles, labels, loc='outside lower center')
+        handles, labels = axs[0].get_legend_handles_labels()
+        fig.legend(handles, labels, ncol=5, loc='outside lower center')
         
     else:
         print(f"Showing results at default path.")
         
-        case_path = os.path.join(run_path, "data")
-        plot_info = load_yaml_info(os.path.join(run_path, "config.yaml"))
+        fig, axs = plt.subplots(nrows=3, ncols=1, sharex=True)
         
-        statistics = load_statistics(case_path, plot_info)
+        case_path  = os.path.join(run_path, "data")
+        statistics = load_statistics(case_path)
         if statistics is None:
             print(f"\"{case_path}\": no data found, skipping")
             return
         
-        show_statistics(statistics, "Latest", "solid", "o")
-        plt.suptitle("Latest")
-        
+        show_statistics(axs, statistics, "Latest", "solid", "o")
+    
+    fig.set_size_inches(8.5, 6.5)
+    fig.tight_layout()
+    fig.subplots_adjust(bottom=0.138)
     plt.show()
     
+    
 if __name__ == "__main__":
-   main(sys.argv)
+    
+    plt.rcParams.update({
+        "text.usetex": True,
+        "font.family": 'serif',
+        "font.serif": ['Computer Modern'],
+        "font.size": 14,
+        "legend.fontsize": 12
+    })
+    
+    colors     = [preCICE_blue, preCICE_orange, preCICE_green, preCICE_lightblue, preCICE_red, preCICE_yellow]
+    linestyles = ["solid", "dashed", "dotted", "dashdot"]
+    markers    = ["o", "v", "d", "h", "s", "P"]
+    
+    run_path  = "./test/adaptive-f-greedy"
+    plot_name = "thesis-exchange-removal-size"
+    
+    if len(sys.argv) == 2:
+        plot_name = sys.argv[1]
+    
+    main(run_path, plot_name, colors, linestyles, markers)
