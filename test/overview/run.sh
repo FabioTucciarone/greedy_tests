@@ -1,4 +1,4 @@
-TEST_NAME="plot"
+TEST_NAME="overview"
 
 export ROOT_LOCATION="$(pwd)"
 
