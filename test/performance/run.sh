@@ -3,11 +3,15 @@ set -e
 TEST_NAME="performance"
 
 export ROOT_LOCATION="$(pwd)"
+
+ASTE_LOCATION="${ROOT_LOCATION}/../aste" # CHANGE DEPENDING ON ASTE INSTALLATION
+
 RUN_LOCATION="${ROOT_LOCATION}/test/${TEST_NAME}"
 TEST_LOCATION="${ROOT_LOCATION}/test/${TEST_NAME}/testcase"
-ASTE_SRC="${ROOT_LOCATION}/../aste/src"
-ASTE_BUILD="${ROOT_LOCATION}/../aste/build"
-MAPPING_TESTER="${ROOT_LOCATION}/../aste/tools/mapping-tester"
+MAPPING_TESTER="${ASTE_LOCATION}/tools/mapping-tester"
+ASTE_BUILD="${ASTE_LOCATION}/build"
+export PATH=$ASTE_BUILD:$PATH
+
 
 rm -rf "${TEST_LOCATION}"
 mkdir -p "${TEST_LOCATION}"

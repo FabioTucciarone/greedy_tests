@@ -32,7 +32,7 @@
             "kind": "rbf-global-direct",
             "options": "polynomial=\"off\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           }
         }
       },
@@ -59,35 +59,47 @@
           "nearest-neighbour": {
             "kind": "nearest-neighbor"
           },
+          "pum_M8": {
+            "kind": "rbf-pum-direct",
+            "options": "vertices-per-cluster=\"8\" project-to-input=\"false\" polynomial=\"off\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
+          },
           "pum_M10": {
             "kind": "rbf-pum-direct",
-            "options": "relative-overlap=\"0.22\" vertices-per-cluster=\"10\" project-to-input=\"false\" polynomial=\"off\"",
+            "options": "vertices-per-cluster=\"10\" project-to-input=\"false\" polynomial=\"off\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "pum_M5": {
             "kind": "rbf-pum-direct",
-            "options": "relative-overlap=\"0.22\" vertices-per-cluster=\"5\" project-to-input=\"false\" polynomial=\"off\"",
+            "options": "vertices-per-cluster=\"5\" project-to-input=\"false\" polynomial=\"off\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "pum_M25": {
+            "kind": "rbf-pum-direct",
+            "options": "vertices-per-cluster=\"25\" project-to-input=\"false\" polynomial=\"off\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
           },
           "pum_M200": {
             "kind": "rbf-pum-direct",
-            "options": "relative-overlap=\"0.22\" vertices-per-cluster=\"200\" project-to-input=\"false\" polynomial=\"off\"",
+            "options": "vertices-per-cluster=\"200\" project-to-input=\"false\" polynomial=\"off\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "pum_M500": {
             "kind": "rbf-pum-direct",
-            "options": "relative-overlap=\"0.22\" vertices-per-cluster=\"500\" project-to-input=\"false\" polynomial=\"off\"",
+            "options": "vertices-per-cluster=\"500\" project-to-input=\"false\" polynomial=\"off\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "pum_M100": {
             "kind": "rbf-pum-direct",
-            "options": "relative-overlap=\"0.22\" vertices-per-cluster=\"100\" project-to-input=\"false\" polynomial=\"off\"",
+            "options": "vertices-per-cluster=\"100\" project-to-input=\"false\" polynomial=\"off\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           }
         }
       },
@@ -112,113 +124,113 @@
           "consistent"
         ],
         "cases": {
-          "p-greedy_1e-4": {
-            "kind": "rbf-greedy",
-            "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"1e-4\"",
-            "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
-          },
           "p-greedy_1e-4.5": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"3.162278e-5\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "p-greedy_1e-5": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"1e-5\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "p-greedy_1e-5.5": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"3.162278e-6\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "p-greedy_1e-6": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"1e-6\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "p-greedy_1e-6.5": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"3.162278e-7\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "p-greedy_1e-7": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"1e-7\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "p-greedy_1e-7.5": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"3.162278e-8\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "p-greedy_1e-8": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"1e-8\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
+          },
+          "p-greedy_1e-8.5": {
+            "kind": "rbf-greedy",
+            "options": "polynomial=\"off\" greedy-type=\"P-cholesky\" solver-rtol=\"3.162278e-9\"",
+            "basis-function": "compact-polynomial-c2",
+            "basis-function-options": "support-radius=\"10\""
           },
           "f-greedy_1e-4": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-4\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "f-greedy_1e-5": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-5\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "f-greedy_1e-6": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-6\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "f-greedy_1e-7": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-7\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "f-greedy_1e-8": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-8\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "f-greedy_1e-9": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-9\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "f-greedy_1e-10": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-10\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "f-greedy_1e-11": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-11\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           },
           "f-greedy_1e-12": {
             "kind": "rbf-greedy",
             "options": "polynomial=\"off\" greedy-type=\"f-cholesky\" solver-rtol=\"1e-12\"",
             "basis-function": "compact-polynomial-c2",
-            "basis-function-options": "support-radius=\"0.5\""
+            "basis-function-options": "support-radius=\"10\""
           }
         }
       },

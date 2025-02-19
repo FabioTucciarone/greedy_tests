@@ -1,11 +1,14 @@
-time-steps: 31
+test-function:  "moving-cos"
+time-steps:     31
 time-step-size: 0.01
-coarse-mesh: "t_0.008" 
-fine-mesh: "t_0.006"
-greedy-type: "f-cholesky-rebuild"
+coarse-mesh:    "t_0.008" 
+fine-mesh:      "t_0.006"
+mapping:        "rbf-pum-direct"
+constraint:     "consistent"
+polynomial:     "off"
 basis-function: "compact-polynomial-c2"
 support-radius: 10
-solver-rtol: 3.5e-8 # 0.01: 8e-8, 0.008: 3.5e-8, 0.006: 4e-9
-constraint: "consistent"
-polynomial: "off"
-test-function: "moving-cos"
+
+greedy-type:          "P-cholesky"
+vertices-per-cluster: 100
+solver-rtol:          5e-9 # 0.01: 8e-8, 0.008: 3.5e-8, 0.006: 4e-9 (0.008 P 5e-9)

@@ -1,29 +1,54 @@
-set -e -x
-
 TEST_NAME="polynomial"
 
 export ROOT_LOCATION="$(pwd)"
-TEST_LOCATION="${ROOT_LOCATION}/test/${TEST_NAME}"
 
-echo "[INFO] ROOT_LOCATION = \"${ROOT_LOCATION}\"  Always run from turbine_test/"
+ASTE_PATH="${ROOT_LOCATION}/../aste" # CHANGE DEPENDING ON ASTE INSTALLATION
 
-MAPPING_TESTER="${ROOT_LOCATION}/../aste/tools/mapping-tester"
-TEST_CASE_LOCATION="${ROOT_LOCATION}/testcases/${TEST_NAME}/case"
+RUN_LOCATION="${ROOT_LOCATION}/test/${TEST_NAME}"
+TEST_LOCATION="${ROOT_LOCATION}/test/${TEST_NAME}/testcase"
+MAPPING_TESTER="${ASTE_PATH}/tools/mapping-tester"
+ASTE_BUILD="${ASTE_PATH}/build"
+export PATH=$ASTE_BUILD:$PATH
 
-export ASTE_A_MPIARGS=""
-export ASTE_B_MPIARGS=""
 export GRID_DISTANCE="0.01"
 export CONVERGENCE_CRITERION="1e-3"
 
-rm -rf "${TEST_CASE_LOCATION}"
-mkdir -p "${TEST_CASE_LOCATION}"
+rm -rf $TEST_LOCATION
+mkdir -p $TEST_LOCATION
 
-python3 "${MAPPING_TESTER}"/generate.py      --setup "${TEST_LOCATION}"/config.json --outdir "${TEST_CASE_LOCATION}" --template "${MAPPING_TESTER}"/config-template.xml --exit
-python3 "${MAPPING_TESTER}"/preparemeshes.py --setup "${TEST_LOCATION}"/config.json --outdir "${TEST_CASE_LOCATION}"
+echo ""
+echo "[TEST] generate.py"
+echo ""
 
-cd "${TEST_CASE_LOCATION}" && bash ./runall.sh
+python3 "${MAPPING_TESTER}/generate.py" --setup "${RUN_LOCATION}/config-franke.json"    --outdir "${TEST_LOCATION}/franke"    --template "${MAPPING_TESTER}"/config-template.xml --exit
+python3 "${MAPPING_TESTER}/generate.py" --setup "${RUN_LOCATION}/config-eggholder.json" --outdir "${TEST_LOCATION}/eggholder" --template "${MAPPING_TESTER}"/config-template.xml --exit
+
+echo ""
+echo "[TEST] preparemeshes.py"
+echo ""
+
+python3 "${MAPPING_TESTER}/preparemeshes.py" --setup "${RUN_LOCATION}/config-franke.json"    --outdir "${TEST_LOCATION}/franke"
+python3 "${MAPPING_TESTER}/preparemeshes.py" --setup "${RUN_LOCATION}/config-eggholder.json" --outdir "${TEST_LOCATION}/eggholder"
+
+echo ""
+echo "[TEST] runall.sh / postprocessall.sh"
+echo ""
+
+cd "${TEST_LOCATION}/franke"
+bash ./runall.sh
+bash ./postprocessall.sh
+cd "${TEST_LOCATION}/eggholder"
+bash ./runall.sh
 bash ./postprocessall.sh
 
-cd "${TEST_LOCATION}"
+echo ""
+echo "[TEST] gatherstats.py"
+echo ""
 
-python3 "${MAPPING_TESTER}"/gatherstats.py --outdir "${TEST_CASE_LOCATION}" --file statistics.csv
+cd "${RUN_LOCATION}/data"
+python3 "${MAPPING_TESTER}/gatherstats.py" --outdir "${TEST_LOCATION}/franke" --file statistics_franke.csv
+python3 ../../gather_greedy_stats.py       --outdir "${TEST_LOCATION}/franke" --file greedy_values_franke.csv
+python3 "${MAPPING_TESTER}/gatherstats.py" --outdir "${TEST_LOCATION}/eggholder" --file statistics_eggholder.csv
+python3 ../../gather_greedy_stats.py       --outdir "${TEST_LOCATION}/eggholder" --file greedy_values_eggholder.csv
+
+cd $RUN_LOCATION

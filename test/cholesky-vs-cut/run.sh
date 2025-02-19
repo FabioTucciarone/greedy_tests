@@ -42,6 +42,7 @@ echo ""
 echo "[TEST] gatherstats.py"
 echo ""
 
-python3 "${MAPPING_TESTER}/gatherstats.py" --outdir "${RUN_LOCATION}/data" --file statistics.csv
+cd $RUN_LOCATION/data
+python3 "${MAPPING_TESTER}/gatherstats.py" --outdir "${TEST_LOCATION}" --file statistics.csv
 
 cd $RUN_LOCATION

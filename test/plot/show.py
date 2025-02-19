@@ -1,19 +1,29 @@
+#!/usr/bin/env python3
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mp
 import sys
+import os
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib import colors as pltcolors
 
 class Config:
     function: str      # franke, cos, eggholder
-    error: str         # relative-l2
     mesh: str          # turbine, halton
     rbf: str           # gauss-45, c2-10, c2-5
     
     include_iter: bool # True, False
     repr_h: float
 
+
+preCICE_orange = "#F36221"
+preCICE_lightblue = "#9ECEEC"
+preCICE_blue = "#0065BD"
+preCICE_green = "#A1B119"
+preCICE_lightgreen = "#E4ED94"
+preCICE_red = "#C91B36"
+preCICE_yellow = "#ffcf4a"
 
 ###### HELPERS ######
 
@@ -35,25 +45,25 @@ def get_grid_sizes(config: Config):
         raise f"unknown mesh: config.mesh={config.mesh}"
 
 
-def read_greedy_values_file(config: Config):
-    return pd.read_csv(f"test/plot/data/M={config.mesh}_f={config.function}_rbf={config.rbf}/greedy_values.csv").sort_values(by="mesh A", ascending=False)
+def read_greedy_values_file(plot_path: str):
+    return pd.read_csv(f"{plot_path}/greedy_values.csv").sort_values(by="mesh A", ascending=False)
 
 
-def read_statistics_file(config: Config):
-    return pd.read_csv(f"test/plot/data/M={config.mesh}_f={config.function}_rbf={config.rbf}/statistics.csv").sort_values(by="mesh A", ascending=False)
+def read_statistics_file(plot_path: str):
+    return pd.read_csv(f"{plot_path}/statistics.csv").sort_values(by="mesh A", ascending=False)
 
 
 def set_properties(config: Config, data_field: str):
-    plt.grid(True, which="major", color="gainsboro", linestyle="-", linewidth=0.5)
+    plt.grid(True, which="major", color="gainsboro", linestyle="dotted", linewidth=1)
     plt.rc("legend",fontsize="small")
     
     # x-Achse
     plt.gca().xaxis.set_inverted(True)
     plt.xscale("log")
-    plt.xlabel("h")
+    plt.xlabel("$h$")
     plt.gca().set_xticks(get_grid_resolutions(config))
-    if data_field == "centers":
-        plt.xlabel("N")
+    if data_field == "used centers":
+        plt.xlabel("$N$")
         plt.gca().set_xticklabels(get_grid_sizes(config))
     else:
         plt.gca().set_xticklabels(get_grid_resolutions(config))
@@ -61,269 +71,236 @@ def set_properties(config: Config, data_field: str):
     # y-Achse
     ylabel = data_field
     if data_field == "relative-l2":
-        ylabel = "RMSE Error"
-    elif "time" in data_field.lower():
-        ylabel = data_field + " (µs)"
-    if data_field != "centers": 
+        ylabel = "error (RMSE)"
+    elif "computeMappingTime" == data_field:
+        ylabel = "comupte time ($\mu s$)"
+    elif "mapDataTime" == data_field:
+        ylabel = "mapping time ($\mu s$)"
+    if data_field != "used centers": 
         plt.yscale("log")
     else:
-        plt.gca().set_yticks([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
-        plt.gca().set_yticklabels(["0%", "10%", "20%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"])
+        plt.gca().set_yticks([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
+        plt.gca().yaxis.set_major_formatter(mp.ticker.PercentFormatter(decimals=0))
     plt.ylabel(ylabel)
+
+
+def greedy_name_to_float(name: str, greedy_method: str):
+    mapping_prefix = f"{greedy_method.lower()}_"
+    name = name.replace(mapping_prefix, "")
+    name = name.str.replace("1e", "")
+    return name.replace("1e", "").astype(float)
+
+
+def greedy_name_to_tolerance_latex(name: str, greedy_method: str):
+    mapping_prefix = f"{greedy_method.lower()}_"
+    name = name.replace(mapping_prefix, "").replace("1e", "10^{")
+    if "10^{" in name:
+        name += "}"
+    return name
 
 
 ###### PLOTS ######
 
-def compare_centers(config: Config):
-    stats_file  = pd.read_csv(f"test/plot/data/statistics_centers.csv").sort_values(by="mesh A", ascending=False)
-    greedy_file = pd.read_csv(f"test/plot/data/greedy_values_centers.csv")
-    raw_stats   = pd.merge(stats_file, greedy_file, left_on="mapping", right_on="mapping", how="left")
-    
-    f_stats = raw_stats[raw_stats["mapping"].str.contains(f"f-greedy_")]
-    p_stats = raw_stats[raw_stats["mapping"].str.contains(f"p-greedy_")]
-
-    plt.plot(f_stats["n"], f_stats[config.error], marker="o", linestyle="none", markersize=5, color="tab:red", label=f"f-greedy")
-    plt.plot(p_stats["n"], p_stats[config.error], marker="d", linestyle="none", markersize=5, color="tab:blue", label=f"P-greedy")
-    
-    plt.grid(True, which="both", color="gainsboro", linestyle="-", linewidth=0.5)
-    plt.rc("legend",fontsize="small")
-    plt.legend()
-    plt.xlabel("Number of Centers (n)")
-    plt.ylabel(f"{config.error} Error")
-    plt.yscale("log")
-    
-    plt.show()
-    
-    
-def compare_f_p(config: Config):
-    stats_file  = pd.read_csv(f"test/plot/data/statistics_{config.function}.csv").sort_values(by="mesh A", ascending=False)
-    greedy_file = pd.read_csv(f"test/plot/data/greedy_values_{config.function}.csv").sort_values(by="mesh A", ascending=False)
-    
-    color_gradiant = ["yellowgreen", "red", "tab:blue"]
-
-    colors     = {}
-    markers    = {}
-    linestyles = {}
-    names      = {}
-    
-    compare_maps  = []
-    f_greedy_maps = []
-    p_greedy_maps = []
-    
-    if config.function == "franke2d(xy)" and config.error == "median(abs)":
-        f_greedy_maps = ["f-greedy_1e-6",     "f-greedy_1e-8",  "f-greedy_1e-10"]
-        p_greedy_maps = ["p-greedy_1e-5.5",   "p-greedy_1e-6",   "p-greedy_1e-6.5"]
-    elif config.function == "franke2d(xy)" and config.error == "relative-l2":
-        f_greedy_maps = ["f-greedy_1e-5",     "f-greedy_1e-7",  "f-greedy_1e-9"]
-        p_greedy_maps = ["p-greedy_1e-5.5",   "p-greedy_1e-6",   "p-greedy_1e-7"]
-    else:
-        print("No configuration available for this case.")
-        return
-    
-    for i, map in enumerate(f_greedy_maps):
-        colors[map] = color_gradiant[i]
-        markers[map] = "d"
-        linestyles[map] = "dotted"
-        t = map.split("-")[4]
-        names[map] = f"f² < 1e-{t}"
-        
-    for i, map in enumerate(p_greedy_maps):
-        colors[map] = color_gradiant[i]
-        markers[map] = "o"
-        linestyles[map] = "solid"
-        t = map.split("-")[4]
-        names[map] = f"P² < 1e-{t}"
-        
-    plt.subplots(1, 3)
-    
-    for map in compare_maps + f_greedy_maps + p_greedy_maps:
-        stats = stats_file[stats_file["mapping"].str.contains(f"{map}$")]
-        
-        plt.subplot(1, 3, 1)
-        plt.plot(stats["mesh A"], stats[config.error], marker=markers[map], linestyle=linestyles[map], markersize=5, color=colors[map], label=f"{names[map]}")
-        set_properties(config.error)
-        
-        plt.subplot(1, 3, 2)
-        plt.plot(stats["mesh A"], stats["globalTime"], marker=markers[map], linestyle=linestyles[map], markersize=5, color=colors[map], label=f"{names[map]}")
-        set_properties("globalTime")
-    
-    plt.subplot(1, 3, 3)
-    for map in f_greedy_maps + p_greedy_maps:
-        stats = greedy_file[greedy_file["mapping"].str.contains(f"{map}$")]
-        plt.plot(stats["mesh A"], stats["n"] / stats["N"], marker=markers[map], linestyle=linestyles[map], markersize=5, color=colors[map], label=f"{names[map]}")
-        set_properties("centers")
-    
-    plt.subplot(1, 3, 1)       
-    plt.plot(stats["mesh A"], stats["mesh A"],    marker="+", markersize=4, linestyle="dotted", color="darkgray", label=f"h¹")
-    plt.plot(stats["mesh A"], stats["mesh A"]**2, marker="+", markersize=4, linestyle="dotted", color="darkgray", label=f"h²")
-    plt.plot(stats["mesh A"], stats["mesh A"]**3, marker="+", markersize=4, linestyle="dotted", color="darkgray", label=f"h³")
-                
-    plt.legend()
-    plt.show()
-
-
-def runtime_vs_error(config: Config):
-    stats_file = read_statistics_file(config)
-    greedy_file = read_greedy_values_file(config)
+def runtime_vs_error(config: Config, plot_path: str):
+    stats_file = read_statistics_file(plot_path)
+    greedy_file = read_greedy_values_file(plot_path)
 
     methods = [["rbf-direct"]]
-    colors  = {"rbf-direct": "tab:blue"  }
+    colors  = {"rbf-direct": preCICE_green }
     markers = {"rbf-direct": "s"         }
-    names   = {"rbf-direct": "rbf direct"}
+    names   = {"rbf-direct": "direct"}
     
     methods += [["nearest-neighbour"]]
     colors["nearest-neighbour"]  = "darkgrey"
     markers["nearest-neighbour"] = "s"
-    names["nearest-neighbour"]   = "nearest neighbour"
+    names["nearest-neighbour"]   = "nearest"
 
     maps = stats_file[stats_file["mapping"].str.contains("pum_")]["mapping"].drop_duplicates().sort_values(key=lambda x: x.str.replace("pum_M", "").astype(float)).to_list()
     methods += [maps]
     for map in maps:
-        colors[map]  = "tab:cyan"
+        colors[map]  = preCICE_lightblue
         markers[map] = "d"
         t = map.split("_M")[1]
-        names[map] = f"PUM: {t}"
+        names[map] = t
     
-    maps = greedy_file[greedy_file["mapping"].str.contains("p-greedy_")]["mapping"].drop_duplicates().sort_values(key=lambda x: x.str.replace("p-greedy_1e", "").astype(float)).to_list()
+    maps = greedy_file[greedy_file["mapping"].str.contains("p-greedy_")]["mapping"].drop_duplicates().sort_values(key=lambda x: greedy_name_to_float(x.str, "p-greedy")).to_list()
     methods += [maps]
     for map in maps:
-        colors[map]  = "yellowgreen"
+        colors[map]  = preCICE_orange
         markers[map] = "o"
         t = map.split("_")[1]
-        names[map] = f"P²: {t}"
+        names[map] = f"${greedy_name_to_tolerance_latex(map, 'p-greedy')}$"
     
-    maps = greedy_file[greedy_file["mapping"].str.contains("f-greedy_")]["mapping"].drop_duplicates().sort_values(key=lambda x: x.str.replace("f-greedy_1e", "").astype(float)).to_list()
+    maps = greedy_file[greedy_file["mapping"].str.contains("f-greedy_")]["mapping"].drop_duplicates().sort_values(key=lambda x: greedy_name_to_float(x.str, "f-greedy")).to_list()
     methods += [maps]
     for map in maps:
-        colors[map]  = "red"
+        colors[map]  = preCICE_blue
         markers[map] = "o"
         t = map.split("_")[1]
-        names[map] = f"r²: {t}"
+        names[map] = f"${greedy_name_to_tolerance_latex(map, 'f-greedy')}$"
         
     stats_h = stats_file[stats_file["mesh A"] == config.repr_h].sort_values(by="mapDataTime", ascending=False)
-    time_fields = ["computeMappingTime", "mapDataTime"]
+    time_fields = ["computeMappingTime", "mapDataTime"] # TODO: peakMemB
     
-    plt.subplots(1, len(time_fields))
+    fig, axs = plt.subplots(1, len(time_fields), sharey=True)
     
     for i, time_field in enumerate(time_fields):
-        plt.subplot(1, len(time_fields), 1 + i)
         for maps in methods:
             errors = []
             times = []
             for map in maps:
                 stats = stats_h[stats_h["mapping"].str.contains(f"{map}$")]
                 if len(stats) > 0:              
-                    error = float(stats[config.error].iloc[0])
+                    error = float(stats["relative-l2"].iloc[0])
                     time  = float(stats[time_field].iloc[0])
                     errors.append(error)
                     times.append(time)
                     
-                    plt.text(time + 0.1 * time, error, names[map], fontsize = 9)
-                    plt.yscale("log")
-                    plt.xscale("log")
+                    axs[i].text(time + 0.35 * time, error - 0.2 * error, names[map], fontsize = 10)
+                    axs[i].set_yscale("log")
+                    axs[i].set_xscale("log")
             
-            plt.plot(times, errors, marker=markers[maps[0]], linestyle=(0, (1, 2)), markersize=7, color=colors[maps[0]], label=f"{names[maps[0]]}")
+            axs[i].plot(times, errors, marker=markers[maps[0]], linestyle=(0, (1, 2)), color=colors[maps[0]], label=f"{names[maps[0]]}")
 
-        plt.xlabel(f"{time_field} (µs)")
-        plt.ylabel(f"{'RMSE' if config.error == 'relative-l2' else config.error} Error")
-        plt.grid(True, which="both", color="gainsboro", linestyle="-", linewidth=0.5)
+        time_label = "mapping time" if time_field == "mapDataTime" else "compute time"
+        axs[i].set_xlabel(f"{time_label} ($\mu s$)")
+        if i == 0:
+            axs[i].set_ylabel(f"error (RMSE)")
+        axs[i].grid(True, which="major", color="gainsboro", linestyle="dotted", linewidth=1)
     
-    plt.suptitle(config.function)
+    fig.subplots_adjust(wspace=0.095, bottom=0.2)
+    fig.set_size_inches(8.5, 5)
+    
+    line_p_greedy = mp.lines.Line2D([0], [0], label="$P$-greedy", marker="o", color=preCICE_orange)
+    line_f_greedy = mp.lines.Line2D([0], [0], label='$f$-greedy', marker="o", color=preCICE_blue)
+    line_pum = mp.lines.Line2D([0], [0], label='PUM', marker="d", color=preCICE_lightblue)
+    line_nearest = mp.lines.Line2D([0], [0], label='nearest-neighbour', marker="s", color="darkgrey")
+    line_direct = mp.lines.Line2D([0], [0], label='global-direct', marker="s", color=preCICE_green)
+        
+    handles, labels = fig.axes[0].get_legend_handles_labels()
+    handles.clear()
+    handles.extend([line_p_greedy, line_f_greedy, line_pum, line_nearest, line_direct])
+    fig.legend(handles=handles, ncol=5, loc='outside lower center')
+    
+    plt.savefig(f"error-vs-runtime.pdf")
     plt.show()   
 
 
-def compare_methods(config: Config, fields: list):
+def compare_methods(config: Config, plot_path: str, greedy_method: str):
 
-    stats_file  = read_statistics_file(config)
-    greedy_file = read_greedy_values_file(config)
-    
-    f_greedy_maps = greedy_file[greedy_file["mapping"].str.contains("f-greedy_")]["mapping"].drop_duplicates().sort_values(key=lambda x: x.str.replace("f-greedy_1e", "").astype(float)).to_list()
-    p_greedy_maps = greedy_file[greedy_file["mapping"].str.contains("p-greedy_")]["mapping"].drop_duplicates().sort_values(key=lambda x: x.str.replace("p-greedy_1e", "").astype(float)).to_list()
-    
-    color_base_names = ["yellowgreen", "darkkhaki", "gold", "orange", "red", "mediumvioletred", "mediumpurple", "mediumslateblue"]
-    color_base = [pltcolors.hex2color(pltcolors.cnames[color_name]) for color_name in color_base_names]
-    color_map  = LinearSegmentedColormap.from_list("colormap", color_base, N=max(len(p_greedy_maps),len(f_greedy_maps)))
+    # collect statistics
 
-    colors     = {"rbf-direct": "tab:blue", "pum_M10": "tab:cyan", "pum_M100": "tab:cyan", "nearest-neighbour": "gray"   }
-    markers    = {"rbf-direct": "v",        "pum_M10": "d",        "pum_M100": "d",        "nearest-neighbour": "v"      }
-    linestyles = {"rbf-direct": "solid",    "pum_M10": "solid",    "pum_M100": "solid",    "nearest-neighbour": "dashed" }
-    names      = {"rbf-direct": "direct",   "pum_M10": "PUM: 10",  "pum_M100": "PUM: 100", "nearest-neighbour": "nearest"}
+    stats_file  = read_statistics_file(plot_path)
+    greedy_file = read_greedy_values_file(plot_path)
+    
+    mapping_prefix = f"{greedy_method.lower()}_"
+    greedy_maps = greedy_file[greedy_file["mapping"].str.contains(mapping_prefix)]["mapping"].drop_duplicates().sort_values(key=lambda x: greedy_name_to_float(x.str, greedy_method)).to_list()
 
-    compare_maps  = ["rbf-direct", "pum_M10", "pum_M100", "nearest-neighbour"]
+    # colors and markers
+
+    color_base_names = [preCICE_lightblue, preCICE_lightgreen, preCICE_green, preCICE_yellow, preCICE_orange, preCICE_red]
+    color_base = [pltcolors.hex2color(color_name) for color_name in color_base_names]
+    color_map  = LinearSegmentedColormap.from_list("colormap", color_base, N=len(greedy_maps))
+
+    colors     = { "rbf-direct": preCICE_blue,    "pum_M10": "tab:cyan", "pum_M100": "tab:cyan", "nearest-neighbour": "gray"              }
+    markers    = { "rbf-direct": "v",             "pum_M10": "d",        "pum_M100": "d",        "nearest-neighbour": "v"                 }
+    linestyles = { "rbf-direct": "solid",         "pum_M10": "solid",    "pum_M100": "solid",    "nearest-neighbour": "dashed"            }
+    names      = { "rbf-direct": "global direct", "pum_M10": "PUM: 10",  "pum_M100": "PUM: 100", "nearest-neighbour": "nearest neighbour" }
+    compare_maps  = ["pum_M10", "pum_M100", "nearest-neighbour", "rbf-direct"]
     
+    error_name = "relative-l2"
+    center_name = "used centers"
     
-    for i, map in enumerate(f_greedy_maps):
+    for i, map in enumerate(greedy_maps):
         colors[map] = color_map(i)
         markers[map] = "o"
         linestyles[map] = "dotted"
-        t = map.split("_")[-1]
-        names[map] = f"r² < {t}"
+        names[map] = f"$\\tau={greedy_name_to_tolerance_latex(map, greedy_method)}$"
         
-    for i, map in enumerate(p_greedy_maps):
-        colors[map] = color_map(i)
-        markers[map] = "o"
-        linestyles[map] = "dotted"
-        t = map.split("_")[-1]
-        names[map] = f"P² < {t}"
+    # plot generation
         
-    n_plots = len(fields) + 1
-    fig, axs = plt.subplots(2, n_plots)
+    fig, axs = plt.subplots(2, 2)
     
-    fig.suptitle(f"Mesh={config.mesh}, f={config.function}, $\phi$={config.rbf}")
-    
-    for i, data_name in enumerate([config.error] + fields):
-        for j, greedy_maps in enumerate([f_greedy_maps, p_greedy_maps]):
-            plt.subplot(2, n_plots, 1 + i + j*n_plots)
-            for map in compare_maps + greedy_maps:
-                if map in greedy_maps and data_name == "centers":
-                    stats = greedy_file[greedy_file["mapping"].str.contains(f"{map}$")]
-                    plt.plot(stats["mesh A"], stats["n"] / stats["N"], marker=markers[map], linestyle=linestyles[map], markersize=5, color=colors[map], label=f"{names[map]}")
-                elif data_name != "centers":
-                    stats = stats_file[stats_file["mapping"].str.contains(f"{map}$")]
-                    plt.plot(stats["mesh A"], stats[data_name], marker=markers[map], linestyle=linestyles[map], markersize=5, color=colors[map], label=f"{names[map]}")
-                set_properties(config, data_name)
+    for i, data_name in enumerate([error_name, center_name, "computeMappingTime", "mapDataTime"]):
+
+        plt.subplot(2, 2, 1 + i)
+        
+        max_error = stats_file['relative-l2'].max()
+        start = stats_file["mesh A"].max()
+        
+        if data_name == error_name:
+            plt.plot(stats_file["mesh A"], max(max_error / start, 1) * stats_file["mesh A"],    linestyle="solid", color="lightgray", label=f"$h^1$")
+            plt.plot(stats_file["mesh A"], max(max_error / start, 1) * (stats_file["mesh A"])**2, linestyle="solid", color="lightgray", label=f"$h^2$")
+            plt.plot(stats_file["mesh A"], max(max_error / start, 1) * (stats_file["mesh A"])**3, linestyle="solid", color="lightgray", label=f"$h^3$")
+        
+        for map in greedy_maps + compare_maps:
+            if map in greedy_maps and data_name == center_name:
+                stats = greedy_file[greedy_file["mapping"].str.contains(f"{map}$")]
+                plt.plot(stats["mesh A"], (stats["n"] / stats["N"]) * 100, marker=markers[map], linestyle=linestyles[map], color=colors[map], label=f"{names[map]}")
+            elif data_name != center_name:
+                stats = stats_file[stats_file["mapping"].str.contains(f"{map}$")]
+                plt.plot(stats["mesh A"], stats[data_name], marker=markers[map], linestyle=linestyles[map], color=colors[map], label=f"{names[map]}")
             
-            if data_name == config.error:
-                plt.plot(stats["mesh A"], stats["mesh A"],    marker="+", markersize=4, linestyle="dotted", color="darkgray", label=f"h¹")
-                plt.plot(stats["mesh A"], stats["mesh A"]**2, marker="+", markersize=4, linestyle="dotted", color="darkgray", label=f"h²")
-                plt.plot(stats["mesh A"], stats["mesh A"]**3, marker="+", markersize=4, linestyle="dotted", color="darkgray", label=f"h³")
-            if j == len([f_greedy_maps, p_greedy_maps]) - 1:
-                f_handles, labels = fig.axes[0].get_legend_handles_labels()
-                p_handles, labels = fig.axes[j*n_plots+1].get_legend_handles_labels() # TODO: Unschön nur wenn "centers" angezeigt wird hübsch
-                fig.legend(handles=f_handles+p_handles, loc='outside upper right')
+            
+            plt.grid(True, which="major", color="gainsboro", linestyle="dotted", linewidth=0.5)
+            
+            # x-Achse
+            plt.gca().xaxis.set_inverted(True)
+            plt.xscale("log")
+            plt.xlabel("$h$")
+            plt.gca().set_xticks(get_grid_resolutions(config))
+            if data_name == center_name:
+                plt.xlabel("$N$")
+                plt.gca().set_xticklabels(get_grid_sizes(config))
+            else:
+                plt.gca().set_xticklabels(get_grid_resolutions(config))
+                
+            # y-Achse
+            ylabel = data_name.replace("relative-l2", "error (RMSE)").replace("computeMappingTime", "comupte time ($\mu s$)").replace("mapDataTime", "mapping time ($\mu s$)")
+            if data_name != "used centers": 
+                plt.yscale("log")
+            else:
+                plt.gca().set_yticks([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
+                plt.gca().yaxis.set_major_formatter(mp.ticker.PercentFormatter(decimals=0))
+            plt.ylabel(ylabel)
+
+    # formatting
+             
+    handles, labels = fig.axes[0].get_legend_handles_labels()
+    fig.legend(handles=handles, ncol=5, loc='outside lower center')
         
+    fig.tight_layout()
+    fig.subplots_adjust(bottom=0.19, wspace=0.27, left=0.12, hspace=0.164)
+    fig.set_size_inches(8.5, 8.8)
+    
+    plt.savefig(f"general-comparison-{greedy_method.replace('-greedy', '')}.pdf")
     plt.show()
-    
-    
 
 
-
-
-def main(argv):
-    
+def main():
     plt.rcParams.update({
         "text.usetex": True,
         "font.family": 'serif',
         "font.serif": ['Computer Modern'],
-        "font.size": 12
+        "font.size": 14,
+        "legend.fontsize": 12,
+        "lines.markersize": 5
     })
+      
+    plot_path = os.path.join("test", "plot", "data")
+    if len(sys.argv) == 2:
+        plot_path = os.path.join(plot_path, sys.argv[1])
     
     config = Config()
-    
-    # compare_methods
-    config.function = "franke3d" # franke, eggholder, easom
-    config.error    = "relative-l2"   # median(abs), relative-l2
-    config.rbf      = "c2-5"
     config.mesh     = "turbine"
-    
-    # runtime_vs_error
     config.include_iter = False
-    config.repr_h = 0.008
+    config.repr_h = 0.006
     
-    compare_methods(config, ["centers", "computeMappingTime", "mapDataTime"])
-    runtime_vs_error(config)
+    compare_methods(config, plot_path, "f-greedy")
+    compare_methods(config, plot_path, "P-greedy")
+    runtime_vs_error(config, plot_path)
     
     
 
 if __name__ == "__main__":
-   main(sys.argv)
+   main()

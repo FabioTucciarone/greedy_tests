@@ -1,0 +1,87 @@
+{
+  "general": {
+    "function": "franke3d",
+    "ranks": {
+      "A": [ 1 ],
+      "B": [ 1 ]
+    },
+    "synchronize": false,
+    "meshes": {
+      "A": { "0.008": "${ROOT_LOCATION}/meshes/t_0.008.vtk" },
+      "B": { "0.003": "${ROOT_LOCATION}/meshes/t_0.003.vtk" }
+    }
+  },
+  "groups": [
+    {
+      "mapping": {
+        "constraints": ["consistent"],
+        "cases": {
+          "direct_C2-0.1": { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c2 support-radius=\"0.1\"" },
+          "direct_C2-0.5": { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c2 support-radius=\"0.5\"" },
+          "direct_C2-1":   { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c2 support-radius=\"1\"" },
+          "direct_C2-2":   { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c2 support-radius=\"2\"" },
+          "direct_C2-3":   { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c2 support-radius=\"3\"" },
+          "direct_C2-4":   { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c2 support-radius=\"4\"" },
+          "direct_C2-5":   { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c2 support-radius=\"5\"" },
+          "direct_C2-6":   { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c2 support-radius=\"6\"" },
+          "direct_C2-7":   { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c2 support-radius=\"7\"" },
+          "direct_C2-8":   { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c2 support-radius=\"8\"" },
+          "direct_C2-9":   { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c2 support-radius=\"9\"" },
+          "direct_C2-10":  { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c2 support-radius=\"10\"" },
+
+          "f_C2-0.1": { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"0.1\"" },
+          "f_C2-0.5": { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"0.5\"" },
+          "f_C2-1":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"1\"" },
+          "f_C2-2":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"2\"" },
+          "f_C2-3":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"3\"" },
+          "f_C2-4":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"4\"" },
+          "f_C2-5":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"5\"" },
+          "f_C2-6":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"6\"" },
+          "f_C2-7":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"7\"" },
+          "f_C2-8":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"8\"" },
+          "f_C2-9":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"9\"" },
+          "f_C2-10":  { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"10\"" },
+
+          "P_C2-0.1": { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"0.1\"" },
+          "P_C2-0.5": { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"0.5\"" },
+          "P_C2-1":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"1\"" },
+          "P_C2-2":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"2\"" },
+          "P_C2-3":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"3\"" },
+          "P_C2-4":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"4\"" },
+          "P_C2-5":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"5\"" },
+          "P_C2-6":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"6\"" },
+          "P_C2-7":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"7\"" },
+          "P_C2-8":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"8\"" },
+          "P_C2-9":   { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"9\"" },
+          "P_C2-10":  { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"10\"" }
+        }
+      },
+      "meshes": { "A": ["0.008"], "B": ["0.003"] }
+    },
+    {
+      "mapping": {
+        "constraints": ["consistent"],
+        "cases": {
+          "direct_C0-0.4": { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c0 support-radius=\"0.4\"" },
+          "direct_C2-0.4": { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c2 support-radius=\"0.4\"" },
+          "direct_C4-0.4": { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c4 support-radius=\"0.4\"" },
+          "direct_C6-0.4": { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c6 support-radius=\"0.4\"" },
+          "direct_C8-0.4": { "kind": "rbf-global-direct", "options": "polynomial=\"off\"", "basis-function": "compact-polynomial-c8 support-radius=\"0.4\"" },
+
+          "f_C0-0.4": { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c0 support-radius=\"0.4\"" },
+          "f_C2-0.4": { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"0.4\"" },
+          "f_C4-0.4": { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c4 support-radius=\"0.4\"" },
+          "f_C6-0.4": { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c6 support-radius=\"0.4\"" },
+          "f_C8-0.4": { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-9\" greedy-type=\"f-cholesky\"", "basis-function": "compact-polynomial-c8 support-radius=\"0.4\"" },
+
+          "P_C0-0.4": { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c0 support-radius=\"0.4\"" },
+          "P_C2-0.4": { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c2 support-radius=\"0.4\"" },
+          "P_C4-0.4": { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c4 support-radius=\"0.4\"" },
+          "P_C6-0.4": { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c6 support-radius=\"0.4\"" },
+          "P_C8-0.4": { "kind": "rbf-greedy", "options": "polynomial=\"off\" solver-rtol=\"1e-6\" greedy-type=\"P-cholesky\"", "basis-function": "compact-polynomial-c8 support-radius=\"0.4\"" }
+        }
+      },
+      "meshes": { "A": ["0.008"], "B": ["0.003"] }
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import polars as pl
 import pandas as pd
 import numpy as np
@@ -15,23 +16,25 @@ preCICE_orange = "#F36221"
 preCICE_lightblue = "#9ECEEC"
 preCICE_blue = "#0065BD"
 preCICE_green = "#A1B119"
-preCICE_red = "#B02029"
-preCICE_yellow = "#D1A13B"
+preCICE_lightgreen = "#E4ED94"
+preCICE_red = "#C91B36"
 
 
 def parse_greedy_data_json(df_row):
-    data = json.loads(df_row["data"].replace("\'", "\""))
-    return { "N": data["inSize"], "n": data["basisSize"] }
-    
+    if "data" in df_row and df_row["data"] == df_row["data"]:
+        data = json.loads(df_row["data"].replace("\'", "\""))
+        return { "N": data["inSize"], "n": data["basisSize"] }
+    else: 
+        return { "N": 1, "n": 1 }
     
 def set_properties(ax: Axes, label):
-    ax.grid(True, which="major", color="gainsboro", linestyle="-", linewidth=0.5)
+    ax.grid(True, which="major", color="gainsboro", linestyle="dotted", linewidth=1)
     ax.set_ylabel(label)
     ax.tick_params('x', labelbottom=False)
-    if label == "time ($\mu s$)":
-        ax.grid(True, which="both", color="gainsboro", linestyle="-", linewidth=0.5)
+    if label == "mapping time ($\mu s$)":
+        ax.grid(True, which="major", color="gainsboro", linestyle="dotted", linewidth=1)
         ax.set_yscale("log")
-    if label == "centers":
+    if label == "used centers":
         ax.yaxis.set_major_formatter(mp.ticker.PercentFormatter(decimals=0))
     #ax.set_yticks(ax.get_yticks())
 
@@ -39,11 +42,11 @@ def set_properties(ax: Axes, label):
 def combine_input_files(events_csv, statistics_csv, print_details=False):
     if print_details:
         pd.set_option('display.max_rows', None)
-        row_selector = (events_csv["participant"] == "B") & events_csv["event"].str.contains("map..*greedy.(solve|update)", regex=True)
+        row_selector = (events_csv["participant"] == "B") & events_csv["event"].str.contains("(map\..*greedy\.(solve|update)|map\.(rbf|pou)\.mapData)", regex=True)
         events = events_csv[row_selector]
         print(events[["event", "duration"]])
     
-    row_selector = (events_csv["participant"] == "B") & events_csv["event"].str.contains("map..*greedy.mapData")
+    row_selector = (events_csv["participant"] == "B") & events_csv["event"].str.contains("(map\..*greedy\.mapData|map\.(rbf|pou)\.mapData)", regex=True)
     events = events_csv[row_selector]
     
     applied_df = events.apply(parse_greedy_data_json, axis='columns', result_type='expand')
@@ -61,10 +64,10 @@ def combine_input_files(events_csv, statistics_csv, print_details=False):
 
 def show_statistics(axs: list[Axes], statistics, label, linestyle, marker):
     axs[0].plot(statistics["t"], statistics["duration"], marker=marker, linestyle=linestyle, markersize=4, label=label)
-    set_properties(axs[0], "time ($\mu s$)")
+    set_properties(axs[0], "mapping time ($\mu s$)")
 
     axs[1].plot(statistics["t"], (statistics["n"] / statistics["N"]) * 100, marker=marker,linestyle=linestyle, markersize=4, label=label)
-    set_properties(axs[1], "centers")
+    set_properties(axs[1], "used centers")
                 
     axs[2].plot(statistics["t"], statistics["relative-l2"], marker=marker, linestyle=linestyle, markersize=4, label=label)
     set_properties(axs[2], "error (RMSE)")
@@ -106,10 +109,8 @@ def load_yaml_info(info_yaml_path):
             return None
 
 
-def main(run_path, plot_name, colors, linestyles, markers):
+def build_figure(plot_path, colors, linestyles, markers):
     
-    plot_path = os.path.join(run_path, "data", plot_name)
- 
     if len(os.listdir(plot_path)) > 0:
         
         fig, axs = plt.subplots(nrows=3, ncols=1, sharex=True)
@@ -118,7 +119,6 @@ def main(run_path, plot_name, colors, linestyles, markers):
             axs[j].set_prop_cycle(cycler(color=colors))
         
         i = 0
-        plot_path = os.path.join(run_path, "data", plot_name)
         case_dirs = os.listdir(plot_path)
         case_dirs.sort()
         
@@ -140,7 +140,8 @@ def main(run_path, plot_name, colors, linestyles, markers):
                         if statistics is None:
                             continue
                         
-                        show_statistics(axs, statistics, f"{case_dir}: {sub_case_dir}", linestyles[i % len(linestyles)], markers[i % len(markers)])
+                        combined_name = f"{sub_case_dir}" if case_dir == "all" else f"{case_dir}: {sub_case_dir}"
+                        show_statistics(axs, statistics, f"{combined_name}", linestyles[i % len(linestyles)], markers[i % len(markers)])
                 i += 1
             
                 for j in range(0, 3):
@@ -154,38 +155,45 @@ def main(run_path, plot_name, colors, linestyles, markers):
         
         fig, axs = plt.subplots(nrows=3, ncols=1, sharex=True)
         
-        case_path  = os.path.join(run_path, "data")
+        case_path  = os.path.join(plot_path, "data") #TODO LÖSEN
         statistics = load_statistics(case_path)
         if statistics is None:
             print(f"\"{case_path}\": no data found, skipping")
             return
         
         show_statistics(axs, statistics, "Latest", "solid", "o")
+        
+    return fig
     
-    fig.set_size_inches(8.5, 6.5)
-    fig.tight_layout()
-    fig.subplots_adjust(bottom=0.138)
-    plt.show()
-    
-    
-if __name__ == "__main__":
-    
+
+def  main():
     plt.rcParams.update({
         "text.usetex": True,
         "font.family": 'serif',
         "font.serif": ['Computer Modern'],
-        "font.size": 14,
+        "figure.figsize": [8.5, 6.5],
+        "font.size": 13,
         "legend.fontsize": 12
     })
-    
-    colors     = [preCICE_blue, preCICE_orange, preCICE_green, preCICE_lightblue, preCICE_red, preCICE_yellow]
+   
+    colors     = [preCICE_orange, preCICE_blue, preCICE_lightblue, preCICE_green, preCICE_red, preCICE_lightgreen]
     linestyles = ["solid", "dashed", "dotted", "dashdot"]
     markers    = ["o", "v", "d", "h", "s", "P"]
     
-    run_path  = "./test/adaptive-f-greedy"
-    plot_name = "thesis-exchange-removal-size"
-    
+    plot_path = os.path.join("test", "adaptive-f-greedy", "data")
     if len(sys.argv) == 2:
-        plot_name = sys.argv[1]
+        plot_path = os.path.join(plot_path, sys.argv[1])
+        
+    fig = build_figure(plot_path, colors, linestyles, markers)
     
-    main(run_path, plot_name, colors, linestyles, markers)
+    fig.tight_layout()
+    fig.subplots_adjust(bottom=0.138)
+    
+    name = plot_path.split("/")[-1].split("thesis-")[-1]
+    
+    plt.savefig(f"adaptive-{name}.pdf")
+    plt.show() 
+    
+    
+if __name__ == "__main__":
+    main()

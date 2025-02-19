@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import polars as pl
 import pandas as pd
 import numpy as np

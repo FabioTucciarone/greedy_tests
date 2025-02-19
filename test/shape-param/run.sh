@@ -1,30 +1,50 @@
-set -e -x
-
 TEST_NAME="shape-param"
 
 export ROOT_LOCATION="$(pwd)"
-TEST_LOCATION="${ROOT_LOCATION}/test/${TEST_NAME}"
 
-echo "[INFO] ROOT_LOCATION = \"${ROOT_LOCATION}\"  Always run from turbine_test/"
+ASTE_LOCATION="${ROOT_LOCATION}/../aste" # CHANGE DEPENDING ON ASTE INSTALLATION
+CONFIG_FILE="config-franke"
 
-MAPPING_TESTER="${ROOT_LOCATION}/../aste/tools/mapping-tester"
-TEST_CASE_LOCATION="${ROOT_LOCATION}/testcases/${TEST_NAME}/case"
+RUN_LOCATION="${ROOT_LOCATION}/test/${TEST_NAME}"
+TEST_LOCATION="${ROOT_LOCATION}/test/${TEST_NAME}/testcase"
+MAPPING_TESTER="${ASTE_LOCATION}/tools/mapping-tester"
+ASTE_BUILD="${ASTE_LOCATION}/build"
+export PATH=$ASTE_BUILD:$PATH
 
-export ASTE_A_MPIARGS=""
-export ASTE_B_MPIARGS=""
-export GRID_DISTANCE="0.01"
-export CONVERGENCE_CRITERION="1e-3"
+rm -rf "${TEST_LOCATION}"
+mkdir -p "${TEST_LOCATION}"
 
-rm -rf "${TEST_CASE_LOCATION}"
-mkdir -p "${TEST_CASE_LOCATION}"
+echo ""
+echo "[TEST] generate.py"
+echo ""
 
-python3 "${MAPPING_TESTER}"/generate.py      --setup "${TEST_LOCATION}"/config.json --outdir "${TEST_CASE_LOCATION}" --template "${MAPPING_TESTER}"/config-template.xml --exit
-python3 "${MAPPING_TESTER}"/preparemeshes.py --setup "${TEST_LOCATION}"/config.json --outdir "${TEST_CASE_LOCATION}"
+python3 "${MAPPING_TESTER}"/generate.py --setup "${RUN_LOCATION}/${CONFIG_FILE}.json" --outdir "${TEST_LOCATION}" --template "${MAPPING_TESTER}"/config-template.xml --exit
 
-cd "${TEST_CASE_LOCATION}" && bash ./runall.sh
-bash ./postprocessall.sh
+echo ""
+echo "[TEST] preparemeshes.py"
+echo ""
+
+python3 "${MAPPING_TESTER}"/preparemeshes.py --setup "${RUN_LOCATION}/${CONFIG_FILE}.json" --outdir "${TEST_LOCATION}"
+
+echo ""
+echo "[TEST] runall.sh"
+echo ""
 
 cd "${TEST_LOCATION}"
+bash ./runall.sh
 
-python3 "${MAPPING_TESTER}"/gatherstats.py --outdir "${TEST_CASE_LOCATION}" --file statistics.csv
-python3 show.py statistics.csv
+echo ""
+echo "[TEST] preparemeshes.py"
+echo ""
+
+bash ./postprocessall.sh
+
+echo ""
+echo "[TEST] gatherstats.py"
+echo ""
+
+mkdir -p "${RUN_LOCATION}/data"
+cd "${RUN_LOCATION}/data"
+
+python3 "${MAPPING_TESTER}"/gatherstats.py --outdir "${TEST_LOCATION}" --file statistics.csv
+python3 ../../gather_greedy_stats.py --outdir "${TEST_LOCATION}" --file greedy_values.csv

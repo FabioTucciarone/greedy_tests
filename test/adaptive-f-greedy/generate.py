@@ -32,6 +32,31 @@ def get_aste_config(config, participant):
     
 def get_precice_config(config):
     
+    if config["mapping"] == "rbf-greedy":
+        mapping_method = f"""
+            <mapping:rbf-greedy greedy-type="{config['greedy-type']}" solver-rtol="{config['solver-rtol']}" constraint="{config['constraint']}" direction="read" from="A-Mesh" to="B-Mesh" polynomial="{config['polynomial']}">
+                <basis-function:{config['basis-function']} support-radius="{config['support-radius']}" />
+            </mapping:rbf-greedy>
+        """
+    elif config["mapping"] == "rbf-global-direct":
+         mapping_method = f"""
+            <mapping:rbf-global-direct constraint="{config['constraint']}" direction="read" from="A-Mesh" to="B-Mesh" polynomial="{config['polynomial']}">
+                <basis-function:{config['basis-function']} support-radius="{config['support-radius']}" />
+            </mapping:rbf-global-direct>
+        """
+    elif config["mapping"] == "rbf-pum-direct":
+         mapping_method = f"""
+            <mapping:rbf-pum-direct vertices-per-cluster="{config['vertices-per-cluster']}" constraint="{config['constraint']}" direction="read" from="A-Mesh" to="B-Mesh" polynomial="{config['polynomial']}">
+                <basis-function:{config['basis-function']} support-radius="{config['support-radius']}" />
+            </mapping:rbf-pum-direct>
+        """
+    else:
+        mapping_method = f"""
+            <mapping:{config["mapping"]} constraint="{config['constraint']}" direction="read" from="A-Mesh" to="B-Mesh" polynomial="{config['polynomial']}">
+                <basis-function:{config['basis-function']} support-radius="{config['support-radius']}" />
+            </mapping:{config["mapping"]}>
+        """
+    
     return textwrap.dedent(f"""    <?xml version="1.0" encoding="UTF-8" ?>
     <precice-configuration>
     <log enabled="0" />
@@ -59,9 +84,7 @@ def get_precice_config(config):
         <receive-mesh name="A-Mesh" from="A" />
         <provide-mesh name="B-Mesh" />
         <read-data name="Data" mesh="B-Mesh" />
-        <mapping:rbf-greedy greedy-type="{config['greedy-type']}" solver-rtol="{config['solver-rtol']}" constraint="{config['constraint']}" direction="read" from="A-Mesh" to="B-Mesh" polynomial="{config['polynomial']}">
-        <basis-function:{config['basis-function']} support-radius="{config['support-radius']}" />
-        </mapping:rbf-greedy>
+        {mapping_method}
     </participant>
 
     <coupling-scheme:serial-explicit>

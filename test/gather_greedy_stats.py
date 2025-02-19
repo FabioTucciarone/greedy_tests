@@ -13,7 +13,7 @@ def parse_args(argv):
         "-o",
         "--outdir",
         default="cases",
-        help="Directory to generate the test suite in.",
+        help="Directory where to find the test suite.",
     )
     parser.add_argument(
         "-f",
@@ -21,6 +21,12 @@ def parse_args(argv):
         type=str,
         default="greedy_values.csv",
         help="The resulting CSV file containing all stats.",
+    )
+    parser.add_argument(
+        "-nc",
+        "--name_constraint",
+        default="",
+        help="String that must be included in the case name.",
     )
     return parser.parse_args(argv)
 
@@ -33,11 +39,16 @@ def main(argv):
     stats_collection = [["mapping", "mesh A", "mesh B", "N", "n"]]
     
     for case_dir_name in os.listdir(args.outdir):
-        if "greedy" in case_dir_name:
+        if args.name_constraint == "" or args.name_constraint in case_dir_name:
+            
             case_dir = os.path.join(args.outdir, case_dir_name, "consistent")
+            if not os.path.isdir(case_dir):
+                print(f"{os.path.join(args.outdir, case_dir_name)}: not a case directory, skipping")
+                continue
+                
             for mesh_dir_name in os.listdir(case_dir):
                 
-                case_results_dir = os.path.join(case_dir, mesh_dir_name, "1-1") # "1-1" assumption
+                case_results_dir = os.path.join(case_dir, mesh_dir_name, "1-1") # TODO: "1-1" assumption
                 profiling_json   = os.path.join(case_results_dir, "profiling.json") 
                 profiling_csv    = os.path.join(case_results_dir, "profiling.csv")
                 
@@ -47,7 +58,7 @@ def main(argv):
                 
                 pd.set_option('display.max_rows', None)
                 statistics   = pd.read_csv(profiling_csv)
-                row_selector = (statistics["participant"] == "B") & (statistics["event"].str.contains("advance/map\..-greedy\.mapData", regex=True) )
+                row_selector = (statistics["participant"] == "B") & (statistics["event"].str.contains("advance/map\.greedy\.mapData", regex=True) )
                 
                 if len(statistics[row_selector]["data"]) != 1:
                     print(f"{case_dir_name}: no greedy data found, skipping")

@@ -17,8 +17,8 @@
         "constraints": ["consistent"],
         "cases": {
           "performance": {
-            "kind": "rbf-greedy", "options": "polynomial=\"separate\" solver-rtol=\"1e-2\" greedy-type=\"f-cholesky\"",
-            "basis-function": "gaussian support-radius=\"0.095\"",
+            "kind": "rbf-global-direct", "options": "polynomial=\"off\"",
+            "basis-function": "compact-polynomial-c8 support-radius=\"0.25\"",
             "executor": "cpu", "executor-options": ""
           }
         }

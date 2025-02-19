@@ -1,12 +1,14 @@
-
 TEST_NAME="plot"
 
 export ROOT_LOCATION="$(pwd)"
+
+ASTE_LOCATION="${ROOT_LOCATION}/../aste" # CHANGE DEPENDING ON ASTE INSTALLATION
+
 RUN_LOCATION="${ROOT_LOCATION}/test/${TEST_NAME}"
 TEST_LOCATION="${ROOT_LOCATION}/test/${TEST_NAME}/testcase"
-ASTE_SRC="${ROOT_LOCATION}/../aste/src"
-ASTE_BUILD="${ROOT_LOCATION}/../aste/build"
-MAPPING_TESTER="${ROOT_LOCATION}/../aste/tools/mapping-tester"
+MAPPING_TESTER="${ASTE_LOCATION}/tools/mapping-tester"
+ASTE_BUILD="${ASTE_LOCATION}/build"
+export PATH=$ASTE_BUILD:$PATH
 
 rm -rf "${TEST_LOCATION}"
 mkdir -p "${TEST_LOCATION}"
@@ -40,7 +42,7 @@ echo ""
 echo "[TEST] gatherstats.py"
 echo ""
 
-cd "${RUN_LOCATION}"
+cd "${RUN_LOCATION}/data"
 
 python3 "${MAPPING_TESTER}"/gatherstats.py --outdir "${TEST_LOCATION}" --file statistics.csv
-python3 gather_greedy_stats.py --outdir "${TEST_LOCATION}" --file greedy_values.csv
+python3 ../../gather_greedy_stats.py --outdir "${TEST_LOCATION}" --file greedy_values.csv --name_constraint "greedy"
