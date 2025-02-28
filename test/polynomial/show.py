@@ -31,7 +31,8 @@ def format_plot(test_function, plot_name):
         plt.gca().minorticks_off()
         plt.gca().set_yticks([1,2,5,10,20,50,100])
         plt.gca().set_xticklabels([438, 924, 3458, 9588, 21283])
-
+        plt.xlabel("$N$")
+        
         plt.gca().yaxis.set_major_formatter(mp.ticker.PercentFormatter(decimals=0))
         
     if test_function == "eggholder" and plot_name == "error":
@@ -54,14 +55,14 @@ def main(plot_path: str):
         linestyles = {"off": "dashed", "sep": "solid"}
         markers    = {"off": "o",      "sep": "D"}
         
-        franke_tols    = {"f": {"A": "810",            "B": "175"},
-                        "P": {"A": "4 \cdot 10^{-4}","B": "3.2 \cdot 10^{-5}"}}
-        eggholder_tols = {"f": {"A": "10^{-7}",        "B": "10^{-9}"},
-                        "P": {"A": "4 \cdot 10^{-4}","B": "3.2 \cdot 10^{-5}"}}
+        franke_tols    = {"f": {"A": "10^{-7}",        "B": "10^{-9}"},
+                          "P": {"A": "4 \cdot 10^{-4}","B": "3.2 \cdot 10^{-5}"}}
+        eggholder_tols = {"f": {"A": "810",            "B": "175"},
+                          "P": {"A": "4 \cdot 10^{-4}","B": "3.2 \cdot 10^{-5}"}}
         
         tolerances = {"franke": franke_tols, "eggholder": eggholder_tols}
         
-        
+        time_field = "mapDataTime"
         
         for method in ["f", "P"]:
             for p in ["off", "sep"]:
@@ -78,7 +79,7 @@ def main(plot_path: str):
                     format_plot(test_function, "centres")
                             
                     plt.subplot(1,3,2)
-                    plt.plot(stats["mesh A"], stats["mapDataTime"], color=colors[method][t], linestyle=linestyles[p], marker=markers[p], markersize=5, label=label)
+                    plt.plot(stats["mesh A"], stats[time_field], color=colors[method][t], linestyle=linestyles[p], marker=markers[p], markersize=5, label=label)
                     format_plot(test_function, "time")
 
                     plt.subplot(1,3,3)
@@ -93,7 +94,7 @@ def main(plot_path: str):
             stats  = stats_file[stats_file["mapping"].str.contains(mapping_type)]
                     
             plt.subplot(1,3,2)
-            plt.plot(stats["mesh A"], stats["mapDataTime"], color=colors["direct"], linestyle=linestyles[p], marker=markers[p], markersize=5, label=label)
+            plt.plot(stats["mesh A"], stats[time_field], color=colors["direct"], linestyle=linestyles[p], marker=markers[p], markersize=5, label=label)
             format_plot(test_function, "time")
 
             plt.subplot(1,3,3)

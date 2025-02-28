@@ -287,7 +287,7 @@ def main():
         "lines.markersize": 5
     })
       
-    plot_path = os.path.join("test", "plot", "data")
+    plot_path = os.path.join("test", "overview", "data")
     if len(sys.argv) == 2:
         plot_path = os.path.join(plot_path, sys.argv[1])
     

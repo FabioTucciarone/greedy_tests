@@ -24,6 +24,13 @@ def parse_args(argv):
     return parser.parse_args(argv)
 
 
+def median(x):
+    if isinstance(x.loc[0], numbers.Number) and not x.isna().any():
+        return x.median() 
+    else:
+        return x.loc[0]
+
+
 def main(argv):
     args = parse_args(argv[1:])
     
@@ -40,8 +47,8 @@ def main(argv):
                 stats_df = stats_df.sort_values(by=["step"]).reset_index(drop=True)
             data_frames.append(stats_df)
     
-    statistics_avg = pd.concat([df.stack() for df in data_frames], axis=1).apply(lambda x : x.median() if isinstance(x.loc[0], numbers.Number) else x.loc[0], axis=1).unstack()
-    statistics_avg.to_csv(os.path.join(args.run_dir, f"{args.base_name}_avg.csv"))
+    statistics_avg = pd.concat([df.stack() for df in data_frames], axis=1).apply(median, axis=1).unstack()
+    statistics_avg.to_csv(os.path.join(args.run_dir, f"{args.base_name}_med.csv"))
         
 if __name__ == "__main__":
    main(sys.argv)

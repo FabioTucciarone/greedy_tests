@@ -61,43 +61,43 @@
           },
           "pum_M8": {
             "kind": "rbf-pum-direct",
-            "options": "vertices-per-cluster=\"8\" project-to-input=\"false\" polynomial=\"off\"",
+            "options": "vertices-per-cluster=\"8\" relative-overlap=\"0.22\" project-to-input=\"false\" polynomial=\"off\"",
             "basis-function": "compact-polynomial-c2",
             "basis-function-options": "support-radius=\"10\""
           },
           "pum_M10": {
             "kind": "rbf-pum-direct",
-            "options": "vertices-per-cluster=\"10\" project-to-input=\"false\" polynomial=\"off\"",
+            "options": "vertices-per-cluster=\"10\" relative-overlap=\"0.22\" project-to-input=\"false\" polynomial=\"off\"",
             "basis-function": "compact-polynomial-c2",
             "basis-function-options": "support-radius=\"10\""
           },
           "pum_M5": {
             "kind": "rbf-pum-direct",
-            "options": "vertices-per-cluster=\"5\" project-to-input=\"false\" polynomial=\"off\"",
+            "options": "vertices-per-cluster=\"5\" relative-overlap=\"0.22\" project-to-input=\"false\" polynomial=\"off\"",
             "basis-function": "compact-polynomial-c2",
             "basis-function-options": "support-radius=\"10\""
           },
           "pum_M25": {
             "kind": "rbf-pum-direct",
-            "options": "vertices-per-cluster=\"25\" project-to-input=\"false\" polynomial=\"off\"",
+            "options": "vertices-per-cluster=\"25\" relative-overlap=\"0.22\" project-to-input=\"false\" polynomial=\"off\"",
             "basis-function": "compact-polynomial-c2",
             "basis-function-options": "support-radius=\"10\""
           },
           "pum_M200": {
             "kind": "rbf-pum-direct",
-            "options": "vertices-per-cluster=\"200\" project-to-input=\"false\" polynomial=\"off\"",
+            "options": "vertices-per-cluster=\"200\" relative-overlap=\"0.22\" project-to-input=\"false\" polynomial=\"off\"",
             "basis-function": "compact-polynomial-c2",
             "basis-function-options": "support-radius=\"10\""
           },
           "pum_M500": {
             "kind": "rbf-pum-direct",
-            "options": "vertices-per-cluster=\"500\" project-to-input=\"false\" polynomial=\"off\"",
+            "options": "vertices-per-cluster=\"500\" relative-overlap=\"0.22\" project-to-input=\"false\" polynomial=\"off\"",
             "basis-function": "compact-polynomial-c2",
             "basis-function-options": "support-radius=\"10\""
           },
           "pum_M100": {
             "kind": "rbf-pum-direct",
-            "options": "vertices-per-cluster=\"100\" project-to-input=\"false\" polynomial=\"off\"",
+            "options": "vertices-per-cluster=\"100\" relative-overlap=\"0.22\" project-to-input=\"false\" polynomial=\"off\"",
             "basis-function": "compact-polynomial-c2",
             "basis-function-options": "support-radius=\"10\""
           }

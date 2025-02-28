@@ -1,19 +1,28 @@
 old_tests
 
-**/adaptive-f-greedy/data
+**/adaptive-f-greedy/data/*
+!**/adaptive-f-greedy/data/thesis-all-adaptive
+!**/adaptive-f-greedy/data/thesis-all-rbf
+!**/adaptive-f-greedy/data/thesis-removal-size
 **/adaptive-f-greedy/testcase
 
-**/cholesky-vs-cut/data
+**/cholesky-vs-cut/data/*
+!**/cholesky-vs-cut/data/thesis
 **/cholesky-vs-cut/testcase
 
 **/performance/data
 **/performance/testcase
 
-**/polynomial/data
+**/polynomial/data/*
+!**/polynomial/data/thesis
 **/polynomial/testcase
 
-**/shape-param/data
+**/shape-param/data/*
+!**/shape-param/data/thesis
 **/shape-param/testcase
 
-**/overview/data
+**/overview/data/*
+!**/overview/data/thesis
 **/overview/testcase
+
+*.pdf

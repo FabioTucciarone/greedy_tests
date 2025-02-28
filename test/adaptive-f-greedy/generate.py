@@ -4,16 +4,23 @@ import sys
 import os.path
 import textwrap
 
+
+PARTICIPANT_A = "A"
+PARTICIPANT_B = "B"
+
+
 def get_aste_config(config, participant):
     
-    mesh_name = config['coarse-mesh'] if participant=="A" else config['fine-mesh']
-    read_data = "\"Data\"" if participant=="B" else ""
-    write_data = "\"Data\"" if participant=="A" else ""
+    mesh_name = config['coarse-mesh'] if participant==PARTICIPANT_A else config['fine-mesh']
+    read_data = "\"Data\"" if participant==PARTICIPANT_B else ""
+    write_data = "\"Data\"" if participant==PARTICIPANT_A else ""
+    write_output = "true" if participant==PARTICIPANT_B else "false"
      
     return textwrap.dedent(f"""
     {{
         "participant": "{participant}",
         "startdt": "1",
+        "write-output": {write_output},
         "meshes": [
             {{
                 "mesh": "{participant}-Mesh",
@@ -29,30 +36,31 @@ def get_aste_config(config, participant):
         "precice-config": "{config['run-location']}/testcase/precice-config.xml"
     }}
     """)
-    
+
+
 def get_precice_config(config):
     
     if config["mapping"] == "rbf-greedy":
         mapping_method = f"""
-            <mapping:rbf-greedy greedy-type="{config['greedy-type']}" solver-rtol="{config['solver-rtol']}" constraint="{config['constraint']}" direction="read" from="A-Mesh" to="B-Mesh" polynomial="{config['polynomial']}">
+            <mapping:rbf-greedy greedy-type="{config['greedy-type']}" solver-rtol="{config['solver-rtol']}" rebuild-delta="{config['rebuild-delta']}" removal-size="{config['removal-size']}" constraint="{config['constraint']}" direction="read" from="{PARTICIPANT_A}-Mesh" to="{PARTICIPANT_B}-Mesh" polynomial="{config['polynomial']}">
                 <basis-function:{config['basis-function']} support-radius="{config['support-radius']}" />
             </mapping:rbf-greedy>
         """
     elif config["mapping"] == "rbf-global-direct":
          mapping_method = f"""
-            <mapping:rbf-global-direct constraint="{config['constraint']}" direction="read" from="A-Mesh" to="B-Mesh" polynomial="{config['polynomial']}">
+            <mapping:rbf-global-direct constraint="{config['constraint']}" direction="read" from="{PARTICIPANT_A}-Mesh" to="{PARTICIPANT_B}-Mesh" polynomial="{config['polynomial']}">
                 <basis-function:{config['basis-function']} support-radius="{config['support-radius']}" />
             </mapping:rbf-global-direct>
         """
     elif config["mapping"] == "rbf-pum-direct":
          mapping_method = f"""
-            <mapping:rbf-pum-direct vertices-per-cluster="{config['vertices-per-cluster']}" constraint="{config['constraint']}" direction="read" from="A-Mesh" to="B-Mesh" polynomial="{config['polynomial']}">
+            <mapping:rbf-pum-direct vertices-per-cluster="{config['vertices-per-cluster']}" constraint="{config['constraint']}" direction="read" from="{PARTICIPANT_A}-Mesh" to="{PARTICIPANT_B}-Mesh" polynomial="{config['polynomial']}">
                 <basis-function:{config['basis-function']} support-radius="{config['support-radius']}" />
             </mapping:rbf-pum-direct>
         """
     else:
         mapping_method = f"""
-            <mapping:{config["mapping"]} constraint="{config['constraint']}" direction="read" from="A-Mesh" to="B-Mesh" polynomial="{config['polynomial']}">
+            <mapping:{config["mapping"]} constraint="{config['constraint']}" direction="read" from="{PARTICIPANT_A}-Mesh" to="{PARTICIPANT_B}-Mesh" polynomial="{config['polynomial']}">
                 <basis-function:{config['basis-function']} support-radius="{config['support-radius']}" />
             </mapping:{config["mapping"]}>
         """
@@ -65,33 +73,33 @@ def get_precice_config(config):
 
     <data:scalar name="Data"/>
 
-    <mesh name="A-Mesh" dimensions="3">
+    <mesh name="{PARTICIPANT_A}-Mesh" dimensions="3">
         <use-data name="Data" />
     </mesh>
 
-    <mesh name="B-Mesh" dimensions="3">
+    <mesh name="{PARTICIPANT_B}-Mesh" dimensions="3">
         <use-data name="Data" />
     </mesh>
 
-    <m2n:sockets acceptor="A" connector="B" exchange-directory="." />
+    <m2n:sockets acceptor="{PARTICIPANT_A}" connector="{PARTICIPANT_B}" exchange-directory="." />
 
-    <participant name="A">
-        <provide-mesh name="A-Mesh" />
-        <write-data name="Data" mesh="A-Mesh" />
+    <participant name="{PARTICIPANT_A}">
+        <provide-mesh name="{PARTICIPANT_A}-Mesh" />
+        <write-data name="Data" mesh="{PARTICIPANT_A}-Mesh" />
     </participant>
 
-    <participant name="B">
-        <receive-mesh name="A-Mesh" from="A" />
-        <provide-mesh name="B-Mesh" />
-        <read-data name="Data" mesh="B-Mesh" />
+    <participant name="{PARTICIPANT_B}">
+        <receive-mesh name="{PARTICIPANT_A}-Mesh" from="{PARTICIPANT_A}" />
+        <provide-mesh name="{PARTICIPANT_B}-Mesh" />
+        <read-data name="Data" mesh="{PARTICIPANT_B}-Mesh" />
         {mapping_method}
     </participant>
 
     <coupling-scheme:serial-explicit>
-        <participants first="A" second="B" />
+        <participants first="{PARTICIPANT_A}" second="{PARTICIPANT_B}" />
         <max-time-windows value="{config['time-steps']}"/>
         <time-window-size value="{config['time-step-size']}" />
-        <exchange data="Data" mesh="A-Mesh" from="A" to="B" />
+        <exchange data="Data" mesh="{PARTICIPANT_A}-Mesh" from="{PARTICIPANT_A}" to="{PARTICIPANT_B}" />
     </coupling-scheme:serial-explicit>
     </precice-configuration>
     """)
@@ -177,10 +185,10 @@ def main():
         file.write(get_precice_config(config))
     
     with open(f'{config["run-location"]}/testcase/aste-config-A.json', 'w') as file:
-        file.write(get_aste_config(config, "A"))
+        file.write(get_aste_config(config, PARTICIPANT_A))
         
     with open(f'{config["run-location"]}/testcase/aste-config-B.json', 'w') as file:
-        file.write(get_aste_config(config, "B"))
+        file.write(get_aste_config(config, PARTICIPANT_B))
         
     with open(f'{config["run-location"]}/testcase/run.sh', 'w') as file:
         file.write(get_run_file(config))
