@@ -32,15 +32,15 @@ The ``<plot-name>`` is the name of the folder containing the test results, that 
 
 A list of plots from the thesis:
 ```
-./test/adaptive-f-greedy/show.py thesis-compare-all
-./test/adaptive-f-greedy/show.py thesis-direct-P-greedy
-./test/adaptive-f-greedy/show.py thesis-exchange-removal-size
+./test/adaptive-f-greedy/show.py thesis-all-adaptive
+./test/adaptive-f-greedy/show.py thesis-all-rbf
+./test/adaptive-f-greedy/show.py thesis-removal-size
 
-./test/cholesky-vs-cut/show.py thesis-0.006-0.008-P
+./test/cholesky-vs-cut/show.py thesis
 
-./test/shape-param/show.py thesis-franke
+./test/shape-param/show.py thesis
 
-./test/polynomial/show.py thesis-C2-0.5
+./test/polynomial/show.py thesis
 
 ./test/overview/show.py thesis
 ```
