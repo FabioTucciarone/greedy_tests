@@ -15,7 +15,7 @@ The default folder structure assumed is:
 ```
 The ASTE path can be changed in the run.sh file of each test case.
 
-## Running a test
+## Running and showing a test
 
 From the root folder ``greedy_tests`` run
 ```
@@ -30,7 +30,7 @@ To show a specific plot from the thesis, run
 ```
 The ``<plot-name>`` is the name of the folder containing the test results, that is, ``/test/<test-name>/data/<plot-name>``
 
-A list of plots from the thesis:
+## A list of plots from the thesis:
 ```
 ./test/adaptive-f-greedy/show.py thesis-all-adaptive
 ./test/adaptive-f-greedy/show.py thesis-all-rbf
