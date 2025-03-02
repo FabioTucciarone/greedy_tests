@@ -9,8 +9,8 @@ polynomial:     "off"
 basis-function: "compact-polynomial-c2"
 support-radius: 10
 
-greedy-type:          "f-cholesky-exchange"
+greedy-type:          "f-cholesky-tolerance-exchange"
 vertices-per-cluster: 100
-solver-rtol:          5e-9 # 0.01: 8e-8, 0.008: 3.5e-8, 0.006: 4e-9 (0.008 P 5e-9)
+solver-rtol:          3.5e-8 # f-greedy: 0.01: 8e-8, 0.008: 3.5e-8, 0.006: 4e-9;  P-greedy: 0.008: 5e-9
 rebuild-delta:        2.0
-removal-size:         0.05
+removal-size:         0.01
