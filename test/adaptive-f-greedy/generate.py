@@ -157,7 +157,7 @@ def get_run_file(config):
 
     mkdir -p ../../data
     mv profiling.csv ../../data/profiling.csv
-    mv trace.json ../../data/treace.json
+    mv trace.json ../../data/trace.json
     mv ../${{FINE_MESH}}_eval.stats.csv ../../data/statistics.csv
     """)
 

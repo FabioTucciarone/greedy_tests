@@ -15,7 +15,7 @@ for scalars in ["Franke", "scaled Eggholder", "scaled cos"]: #"Franke", "scaled 
     plt.add_actor(axes.actor)
     plt.camera = camera
 
-    mesh = pv.read('eval.vtk')
+    mesh = pv.read('test/other/eval.vtk')
     mesh.rotate_z(90, point=axes.origin, inplace=True)
 
     plt.add_mesh(mesh, scalars=scalars, cmap='coolwarm', show_scalar_bar=False)
